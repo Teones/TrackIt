@@ -1,57 +1,70 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { useState } from "react"
 import axios from "axios"
 
 import logo from "../../assets/logo.png";
 
-export default function SignInPage() {
+export default function SignUpPage() {
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
-
+    const [name, setName] = useState("")
+    const [image, setImage] = useState("")
+    
     const navigate = useNavigate()
 
-    function signIn() {
-        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/login"
+    function signUp() {
+        const URL = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/auth/sign-up"
 
         const promise = axios.post(URL, {
             email: email,
+            name: name,
+            image: image,
             password: password
         })
         promise.then( response => {
+            console.log("foi")
             const {data} = response
-            // setToken(data.token);
-            // setPerfil(data.image)
             console.log(data)
-            navigate("/habitos")
+            navigate("/")
         })
         promise.catch(err => console.log(err.response))
     }
 
     return (
-        <SignIn>
+        <SignUp>
             <Logo>
                 <img src={logo} alt="logo"/>
             </Logo>
             <Form>
+                <>
                 <form>
                     <input type="email" id="email" autoComplete="off" placeholder="Ex: contato@dominio.com" value={email} onChange={(e) => setEmail(e.target.value)} />
                     <label for="email">Email</label>
                 </form>
                 <form>
                     <input type="password" id="password" autoComplete="off" placeholder="Ex: senha123" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <label for="password">Senha</label>
+                    <label for="password">Password</label>
                 </form>
-                <button onClick={() => signIn()} >Entrar</button>
+                <form>
+                    <input type="text" id="name" autoComplete="off" placeholder="Ex: Fulano da Silva" value={name} onChange={(e) => setName(e.target.value)} />
+                    <label for="name">Nome</label>
+                </form>
+                <form>
+                    <input type="text" id="image" autoComplete="off" placeholder="Ex: http://imagensaleatorias" value={image} onChange={(e) => setImage(e.target.value)} />
+                    <label for="image">Foto</label>
+                </form>
+                <button onClick={signUp}>Cadastrar</button>
+                </>
             </Form>
-            <Link to={"/signUp"}>
-                <p>Não tem uma conta? Cadastre-se!</p>
+            <Link to={"/"}>
+                <p>Já tem uma conta? Faça login!</p>
             </Link>
-        </SignIn>
+        </SignUp>
     )
 }
 
-const SignIn = styled.div `
+const SignUp = styled.div `
     width: 100%;
     min-height: 100vh;
     gap: 32px;
