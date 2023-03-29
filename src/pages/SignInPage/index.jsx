@@ -19,11 +19,10 @@ export default function SignInPage() {
             password: password
         })
         promise.then( response => {
-            const {data} = response
-            // setToken(data.token);
-            // setPerfil(data.image)
-            console.log(data)
-            navigate("/habitos")
+            const {data} = response;
+            localStorage.setItem("user", JSON.stringify(data));
+            console.log(data);
+            navigate("/habits")
         })
         promise.catch(err => console.log(err.response))
     }
@@ -36,11 +35,11 @@ export default function SignInPage() {
             <Form>
                 <form>
                     <input type="email" id="email" autoComplete="off" placeholder="Ex: contato@dominio.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <label for="email">Email</label>
+                    <label htmlFor="email">Email</label>
                 </form>
                 <form>
                     <input type="password" id="password" autoComplete="off" placeholder="Ex: senha123" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <label for="password">Senha</label>
+                    <label htmlFor="password">Senha</label>
                 </form>
                 <button onClick={() => signIn()} >Entrar</button>
             </Form>
@@ -106,7 +105,7 @@ const Form = styled.div`
             transition: all 0.3s;
             
             font-family: 'Lexend Deca', sans-serif;
-            color: #DBDBDB;
+            color: #c0c0c0;
             font-size: 16px;
             font-weight: 400;
         }

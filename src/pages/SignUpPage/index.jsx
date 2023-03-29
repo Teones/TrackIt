@@ -40,19 +40,19 @@ export default function SignUpPage() {
                 <>
                 <form>
                     <input type="email" id="email" autoComplete="off" placeholder="Ex: contato@dominio.com" value={email} onChange={(e) => setEmail(e.target.value)} />
-                    <label for="email">Email</label>
+                    <label htmlFor="email">Email</label>
                 </form>
                 <form>
                     <input type="password" id="password" autoComplete="off" placeholder="Ex: senha123" value={password} onChange={(e) => setPassword(e.target.value)} />
-                    <label for="password">Password</label>
+                    <label htmlFor="password">Password</label>
                 </form>
                 <form>
                     <input type="text" id="name" autoComplete="off" placeholder="Ex: Fulano da Silva" value={name} onChange={(e) => setName(e.target.value)} />
-                    <label for="name">Nome</label>
+                    <label htmlFor="name">Nome</label>
                 </form>
                 <form>
                     <input type="text" id="image" autoComplete="off" placeholder="Ex: http://imagensaleatorias" value={image} onChange={(e) => setImage(e.target.value)} />
-                    <label for="image">Foto</label>
+                    <label htmlFor="image">Foto</label>
                 </form>
                 <button onClick={signUp}>Cadastrar</button>
                 </>
@@ -119,7 +119,7 @@ const Form = styled.div`
             transition: all 0.3s;
             
             font-family: 'Lexend Deca', sans-serif;
-            color: #DBDBDB;
+            color: #c0c0c0;
             font-size: 16px;
             font-weight: 400;
         }
