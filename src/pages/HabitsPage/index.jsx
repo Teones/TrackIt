@@ -20,33 +20,33 @@ export default function HabitsPage() {
     ]
 
     function save() {
-        let days = []
+        let habitDays = []
         for(let i = 0; i < week.length; i++) {
             if(week[i].click) {
                 days.push(week[i].number)
             }
         }
-        console.log(days)
 
-        // const config = {
-        //     headers: {
-        //         Authorization: `Bearer ${token}`
-        //     }
-        // }
-        // const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
-        // const body = {
-        //     name: habito,
-        //     days: [dias]
-        // }
-        // const promise = axios.post(url, body, config)
-        // promise.then( response => {
-        //     const {data} = response
-        //     setAdicionar(false)
-        // })
-        // promise.catch(err => {
-        //     let frase = `Erro ${err.response.status}, ${err.response.data.message} `
-        //     alert(frase)
-        // })
+        const config = {
+            headers: {
+                Authorization: `Bearer ${user.token}`
+            }
+        }
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const body = {
+            name: habitName,
+            days: habitDays
+        }
+        const promise = axios.post(url, body, config)
+        promise.then( response => {
+            const {data} = response
+            console.log(data)
+            setAdd(false)
+        })
+        promise.catch(err => {
+            let frase = `Erro ${err.response.status}, ${err.response.data.message} `
+            alert(frase)
+        })
     }
 
     return (
@@ -60,26 +60,24 @@ export default function HabitsPage() {
                 <button onClick={() => setAdd(true)}>+</button>
             </Title>
 
-            {add ? 
-                <ListHabits>
+            <ListHabits>
+                {add ? 
                     <HabitCreator>
                         <form>
                             <input type="text" id="habitName" autoComplete="off" placeholder="Ex: Acordar cedo" value={habitName} onChange={(e) => setHabitName(e.target.value)} />
                             <label htmlFor="habitName">Hábito</label>
                         </form>
                         <DaysOfWeek>
-                            {week.map(day => <Button acronym={day.acronym} number={day.number} week={week} /> )}
+                            {week.map(day => <Button acronym={day.acronym} number={day.number} week={week} key={day.number} /> )}
                         </DaysOfWeek>
                         <div className="actions">
                             <p onClick={ () => setAdd(false) }>Cancelar</p>
                             <button onClick={() => save() }>Salvar</button>
                         </div>
-                    </HabitCreator>
-                </ListHabits> :
-                <ListHabits>
-                    <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
-                </ListHabits>
-            }
+                    </HabitCreator> : ""
+                }
+                <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+            </ListHabits>
 
             <Footer>
                 <Link to="/habits">Hábitos</Link>
