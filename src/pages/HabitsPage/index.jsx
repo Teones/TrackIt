@@ -7,18 +7,47 @@ export default function HabitsPage() {
     const user = JSON.parse(localStorage.getItem("user"));
 
     const [add, setAdd] = useState(false);
-    // const [day, setDay] = useState([]);
     const [habitName, setHabitName] = useState("");
 
-    const week = [
-        {day: "domingo", acronym: "D", number:0},
-        {day: "segunda", acronym: "S", number:1},
-        {day: "terça", acronym: "T", number:2},
-        {day: "quarta", acronym: "Q", number:3},
-        {day: "quinta", acronym: "Q", number:4},
-        {day: "sexta", acronym: "S", number:5},
-        {day: "sábado", acronym: "S", number:6}
+    let week = [
+        {day: "domingo", acronym: "D", number: 0, click: false},
+        {day: "segunda", acronym: "S", number: 1, click: false},
+        {day: "terça", acronym: "T", number: 2, click: false},
+        {day: "quarta", acronym: "Q", number: 3, click: false},
+        {day: "quinta", acronym: "Q", number: 4, click: false},
+        {day: "sexta", acronym: "S", number: 5, click: false},
+        {day: "sábado", acronym: "S", number: 6, click: false}
     ]
+
+    function save() {
+        let days = []
+        for(let i = 0; i < week.length; i++) {
+            if(week[i].click) {
+                days.push(week[i].number)
+            }
+        }
+        console.log(days)
+
+        // const config = {
+        //     headers: {
+        //         Authorization: `Bearer ${token}`
+        //     }
+        // }
+        // const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        // const body = {
+        //     name: habito,
+        //     days: [dias]
+        // }
+        // const promise = axios.post(url, body, config)
+        // promise.then( response => {
+        //     const {data} = response
+        //     setAdicionar(false)
+        // })
+        // promise.catch(err => {
+        //     let frase = `Erro ${err.response.status}, ${err.response.data.message} `
+        //     alert(frase)
+        // })
+    }
 
     return (
         <Habits>
@@ -28,7 +57,7 @@ export default function HabitsPage() {
             </Header>
             <Title>
                 <h1>Meus Hábitos</h1>
-                <button onClick={() => setAdd(!add)}>+</button>
+                <button onClick={() => setAdd(true)}>+</button>
             </Title>
 
             {add ? 
@@ -39,8 +68,12 @@ export default function HabitsPage() {
                             <label htmlFor="habitName">Hábito</label>
                         </form>
                         <DaysOfWeek>
-                            {week.map(day => <Button acronym={day.acronym} number={day.number}/> )}
+                            {week.map(day => <Button acronym={day.acronym} number={day.number} week={week} /> )}
                         </DaysOfWeek>
+                        <div className="actions">
+                            <p onClick={ () => setAdd(false) }>Cancelar</p>
+                            <button onClick={() => save() }>Salvar</button>
+                        </div>
                     </HabitCreator>
                 </ListHabits> :
                 <ListHabits>
@@ -61,17 +94,16 @@ export default function HabitsPage() {
     )
 }
 
-function Button({acronym, number}) {
-    // const [select, setSelect] = useState(false)
-    
-    // let css = `${selecionar}`
+function Button({acronym, number, week}) {
+    const [select, setSelect] = useState(false)
 
-    // if(select === true) {
-    //     setDay(number)
-    // }
+    function selection() {
+        setSelect(!select)
+        week[number].click = !select
+    }
 
     return (
-        <button >
+        <button onClick={() => selection()} className={`${select}`}>
             {acronym}
         </button>
     )
@@ -205,6 +237,7 @@ const HabitCreator = styled.div `
     padding: 18px 19px;
     margin: 0 17px;
     margin-bottom: 29px;
+    gap: 8px;
 
     form {
         display: flex;
@@ -283,23 +316,68 @@ const HabitCreator = styled.div `
             font-size: 18px;
         }
     }
+    .actions {
+        height: 100%;
+
+        display: flex;
+        flex-direction: row;
+        gap: 23px;
+        
+        justify-content: end;
+        align-items: flex-end;
+
+        button {
+            width: 84px;
+            height: 35px;
+            
+            background-color: #52B6FF;
+            border-radius: 5px;
+            border: none;
+            
+            font-family: 'Lexend Deca';
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+            color: #FFFFFF;
+        }
+        
+        p {
+            width: 84px;
+            height: 35px;
+
+            display: flex;
+            align-items: center;
+            
+            font-family: 'Lexend Deca';
+            font-size: 16px;
+            font-weight: 400;
+            text-align: center;
+            color: #52B6FF;
+            text-decoration: underline;
+        }
+    }
 `
 
 const DaysOfWeek = styled.div `
     width: 100%;
     display: flex;
+    gap: 4px;
     
     button {
         width: 30px;
         height: 30px;
-        background-color: #52B6FF;
+        background-color: #FFFFFF;
         
-        border: none;
+        border: 1px solid #D4D4D4;
         border-radius: 5px;
         
         font-family: 'Lexend Deca', sans-serif;
-        color: #FFFFFF;
+        color: #D4D4D4;
         font-size: 20px;
         font-weight: 400;
+    }
+
+    .true {
+        background-color: #52B6FF;
     }
 `
