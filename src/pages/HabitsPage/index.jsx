@@ -1,6 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios"
 
 export default function HabitsPage() {
@@ -8,6 +8,24 @@ export default function HabitsPage() {
 
     const [add, setAdd] = useState(false);
     const [habitName, setHabitName] = useState("");
+    const [habitList, setHabitList] = useState([]);
+
+    useEffect(() => {
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const config = {
+            headers: {
+                Authorization: `Bearer ${user.token}`
+            }
+        }
+        const promise = axios.get(url, config)
+        promise.then( response => {
+            const {data} = response
+            setHabitList(data)
+        })
+        promise.catch(err => {
+            console.log(`Erro ${err.response.status}, ${err.response.data.message} `)
+        })
+    }, [])
 
     let week = [
         {day: "domingo", acronym: "D", number: 0, click: false},
@@ -23,10 +41,10 @@ export default function HabitsPage() {
         let habitDays = []
         for(let i = 0; i < week.length; i++) {
             if(week[i].click) {
-                days.push(week[i].number)
+                habitDays.push(week[i].number)
             }
         }
-
+        console.log(habitDays)
         const config = {
             headers: {
                 Authorization: `Bearer ${user.token}`
@@ -76,7 +94,12 @@ export default function HabitsPage() {
                         </div>
                     </HabitCreator> : ""
                 }
-                <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+
+                {(habitList.length > 0) ? 
+                    habitList.map(habit => <Habit name={habit.name} days={habit.days} id={habit.id} token={user.token} key={habit.id} />)
+                :
+                    <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+                }
             </ListHabits>
 
             <Footer>
@@ -104,6 +127,36 @@ function Button({acronym, number, week}) {
         <button onClick={() => selection()} className={`${select}`}>
             {acronym}
         </button>
+    )
+}
+
+function Habit({name, days, id, token}) {
+    console.log(id)
+
+    function deleteHabit() {
+        const config = {
+            headers: {
+                Authorization: `Bearer ${token}`
+            }
+        }
+        const url = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}`
+        const promise = axios.delete(url, config)
+        promise.then( response => {
+            const {data} = response
+            console.log(data)
+        })
+        promise.catch(err => {
+            let frase = `Erro ${err.response.status}, ${err.response.data.message} `
+            alert(frase)
+        })
+    }
+
+    return (
+        <HabitCard>
+            <h1>{name}</h1>
+            {/* {week.map(day => <Button acronym={day.acronym} number={day.number} week={week} key={day.number} /> )} */}
+            <ion-icon name="trash-outline" onClick={() => deleteHabit()}></ion-icon>
+        </HabitCard>
     )
 }
 
@@ -172,6 +225,7 @@ const Title = styled.div`
 const ListHabits = styled.div`
     display: flex;
     flex-direction: column;
+    padding: 0 18px;
 
     p {
         font-family: "Lexend Deca";
@@ -233,7 +287,6 @@ const HabitCreator = styled.div `
     display: flex;
     flex-direction: column;
     padding: 18px 19px;
-    margin: 0 17px;
     margin-bottom: 29px;
     gap: 8px;
 
@@ -377,5 +430,29 @@ const DaysOfWeek = styled.div `
 
     .true {
         background-color: #52B6FF;
+    }
+`
+
+const HabitCard = styled.div`
+    width: 100%;
+    height: 91px;
+    background-color: #FFFFFF;
+    border-radius: 5px;
+
+    font-family: Lexend Deca;
+    font-size: 20px;
+    font-weight: 400;
+    color: #666666;
+
+    display: flex;
+    flex-direction: column;
+    padding: 13px 15px;
+
+    position: relative;
+
+    ion-icon {
+        font-size: 20px;
+        position: absolute;
+        right: 10px;
     }
 `
