@@ -9,6 +9,36 @@ export default function HabitsPage() {
     const [add, setAdd] = useState(false);
     const [habitName, setHabitName] = useState("");
     const [habitList, setHabitList] = useState([]);
+    
+    function save() {
+        let habitDays = []
+        for(let i = 0; i < week.length; i++) {
+            if(week[i].click) {
+                habitDays.push(week[i].number)
+            }
+        }
+
+        const config = {
+            headers: {
+                Authorization: `Bearer ${user.token}`
+            }
+        }
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const body = {
+            name: habitName,
+            days: habitDays
+        }
+        const promise = axios.post(url, body, config)
+        promise.then( response => {
+            const {data} = response
+            console.log(data)
+            setAdd(false)
+        })
+        promise.catch(err => {
+            let frase = `Erro ${err.response.status}, ${err.response.data.message} `
+            alert(frase)
+        })
+    }
 
     useEffect(() => {
         const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
@@ -37,35 +67,6 @@ export default function HabitsPage() {
         {day: "sábado", acronym: "S", number: 6, click: false}
     ]
 
-    function save() {
-        let habitDays = []
-        for(let i = 0; i < week.length; i++) {
-            if(week[i].click) {
-                habitDays.push(week[i].number)
-            }
-        }
-        console.log(habitDays)
-        const config = {
-            headers: {
-                Authorization: `Bearer ${user.token}`
-            }
-        }
-        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
-        const body = {
-            name: habitName,
-            days: habitDays
-        }
-        const promise = axios.post(url, body, config)
-        promise.then( response => {
-            const {data} = response
-            console.log(data)
-            setAdd(false)
-        })
-        promise.catch(err => {
-            let frase = `Erro ${err.response.status}, ${err.response.data.message} `
-            alert(frase)
-        })
-    }
 
     return (
         <Habits>
@@ -96,7 +97,7 @@ export default function HabitsPage() {
                 }
 
                 {(habitList.length > 0) ? 
-                    habitList.map(habit => <Habit name={habit.name} days={habit.days} id={habit.id} token={user.token} key={habit.id} />)
+                    habitList.map(habit => <Habit name={habit.name} days={habit.days} id={habit.id} token={user.token} key={habit.id} week={week} />)
                 :
                     <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
                 }
@@ -130,9 +131,7 @@ function Button({acronym, number, week}) {
     )
 }
 
-function Habit({name, days, id, token}) {
-    console.log(id)
-
+function Habit({name, days, id, token, week}) {
     function deleteHabit() {
         const config = {
             headers: {
@@ -154,7 +153,13 @@ function Habit({name, days, id, token}) {
     return (
         <HabitCard>
             <h1>{name}</h1>
-            {/* {week.map(day => <Button acronym={day.acronym} number={day.number} week={week} key={day.number} /> )} */}
+            <DaysOfWeek>
+                {week.map(day => 
+                <> {days.includes(day.number)?
+                    <button className="select">{day.acronym}</button> :
+                    <button >{day.acronym}</button>}
+                </> )}
+            </DaysOfWeek>
             <ion-icon name="trash-outline" onClick={() => deleteHabit()}></ion-icon>
         </HabitCard>
     )
@@ -226,6 +231,7 @@ const ListHabits = styled.div`
     display: flex;
     flex-direction: column;
     padding: 0 18px;
+    gap: 10px;
 
     p {
         font-family: "Lexend Deca";
@@ -421,6 +427,9 @@ const DaysOfWeek = styled.div `
         
         border: 1px solid #D4D4D4;
         border-radius: 5px;
+
+        display: flex;
+        justify-content: center;
         
         font-family: 'Lexend Deca', sans-serif;
         color: #D4D4D4;
@@ -430,6 +439,11 @@ const DaysOfWeek = styled.div `
 
     .true {
         background-color: #52B6FF;
+    }
+
+    .select {
+        background-color: #CFCFCF;
+        color: #FFFFFF;
     }
 `
 
@@ -447,6 +461,7 @@ const HabitCard = styled.div`
     display: flex;
     flex-direction: column;
     padding: 13px 15px;
+    justify-content: space-between;
 
     position: relative;
 
