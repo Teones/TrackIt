@@ -316,7 +316,7 @@ const HabitCreator = styled.div `
             transition: all 0.3s;
             
             font-family: 'Lexend Deca', sans-serif;
-            color: #c0c0c0;
+            color: #666666;
             font-size: 16px;
             font-weight: 400;
         }
