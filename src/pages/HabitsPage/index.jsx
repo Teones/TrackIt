@@ -33,6 +33,7 @@ export default function HabitsPage() {
             const {data} = response
             console.log(data)
             setAdd(false)
+            setHabitList(... habitList.push(data))
         })
         promise.catch(err => {
             let frase = `Erro ${err.response.status}, ${err.response.data.message} `
@@ -97,7 +98,7 @@ export default function HabitsPage() {
                 }
 
                 {(habitList.length > 0) ? 
-                    habitList.map(habit => <Habit name={habit.name} days={habit.days} id={habit.id} token={user.token} key={habit.id} week={week} />)
+                    habitList.map(habit => <Habit name={habit.name} days={habit.days} id={habit.id} token={user.token} key={habit.id} week={week} habitList={habitList} setHabitList={setHabitList} />)
                 :
                     <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
                 }
@@ -131,7 +132,7 @@ function Button({acronym, number, week}) {
     )
 }
 
-function Habit({name, days, id, token, week}) {
+function Habit({name, days, id, token, week, setHabitList, habitList}) {
     function deleteHabit() {
         const config = {
             headers: {
@@ -142,7 +143,7 @@ function Habit({name, days, id, token, week}) {
         const promise = axios.delete(url, config)
         promise.then( response => {
             const {data} = response
-            console.log(data)
+            setHabitList(habitList.filter(habits => habits.id != id))
         })
         promise.catch(err => {
             let frase = `Erro ${err.response.status}, ${err.response.data.message} `
