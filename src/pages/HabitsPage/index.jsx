@@ -239,8 +239,6 @@ const ListHabits = styled.div`
         font-size: 18px;
         font-weight: 400;
         color: #666666;
-
-        padding: 0 17px;
     }
 `
 
