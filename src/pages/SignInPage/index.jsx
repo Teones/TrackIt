@@ -1,11 +1,15 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import axios from "axios"
+
+import UserContext from "../../context/UserContext";
 
 import logo from "../../assets/logo.png";
 
 export default function SignInPage() {
+    const { setUserContext } = useContext(UserContext);
+
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
 
@@ -20,7 +24,12 @@ export default function SignInPage() {
         })
         promise.then( response => {
             const {data} = response;
-            localStorage.setItem("user", JSON.stringify(data));
+
+            setUserContext( {
+                token: data.token,
+                image: data.image,
+            })
+
             console.log(data);
             navigate("/habits")
         })
@@ -70,6 +79,9 @@ const SignIn = styled.div `
         font-size: 16px;
         font-weight: 400;
         color: #52B6FF;
+    }
+    a:-webkit-any-link {
+        text-decoration: underline #52B6FF;
     }
 `
 

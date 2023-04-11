@@ -85,6 +85,9 @@ const SignUp = styled.div `
         font-weight: 400;
         color: #52B6FF;
     }
+    a:-webkit-any-link {
+        text-decoration: underline #52B6FF;
+    }
 `
 
 const Logo = styled.div`

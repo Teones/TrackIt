@@ -1,15 +1,40 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useContext } from "react";
 import axios from "axios"
 
+import UserContext from '../../context/UserContext';
+
 export default function HabitsPage() {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const navigate = useNavigate()
+    const { userContext } = useContext(UserContext);
+    const user = userContext;
+
+    useEffect(() => {
+        user.token == undefined ? navigate("/") : ""
+    }, [])
 
     const [add, setAdd] = useState(false);
     const [habitName, setHabitName] = useState("");
     const [habitList, setHabitList] = useState([]);
     
+    useEffect(() => {
+        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
+        const config = {
+            headers: {
+                Authorization: `Bearer ${user.token}`
+            }
+        }
+        const promise = axios.get(url, config)
+        promise.then( response => {
+            const {data} = response
+            setHabitList(data)
+        })
+        promise.catch(err => {
+            console.log(`Erro ${err.response.status}, ${err.response.data.message} `)
+        })
+    }, [])
+
     function save() {
         let habitDays = []
         for(let i = 0; i < week.length; i++) {
@@ -40,23 +65,6 @@ export default function HabitsPage() {
             alert(frase)
         })
     }
-
-    useEffect(() => {
-        const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits"
-        const config = {
-            headers: {
-                Authorization: `Bearer ${user.token}`
-            }
-        }
-        const promise = axios.get(url, config)
-        promise.then( response => {
-            const {data} = response
-            setHabitList(data)
-        })
-        promise.catch(err => {
-            console.log(`Erro ${err.response.status}, ${err.response.data.message} `)
-        })
-    }, [])
 
     let week = [
         {day: "domingo", acronym: "D", number: 0, click: false},

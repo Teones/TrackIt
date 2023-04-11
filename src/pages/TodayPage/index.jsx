@@ -1,11 +1,19 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import dayjs from "dayjs";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+
+import UserContext from '../../context/UserContext';
 
 export default function TodayPage() {
-    const user = JSON.parse(localStorage.getItem("user"));
+    const navigate = useNavigate()
+    const { userContext } = useContext(UserContext);
+    const user = userContext;
+
+    useEffect(() => {
+        user.token == undefined ? navigate("/") : ""
+    }, [])
     const date = dayjs().locale('pt-br').format('dddd, DD/MM').split('-feira').join('')
     const day = date[0].toUpperCase() + date.substring(1)
 
@@ -81,7 +89,7 @@ function HabitCard({sequence, done, record, name, id, user}) {
     }
 
     return (
-        <Habit check={check} record={record >= sequence && record != 0} >
+        <Habit check={check} record={record >= sequence && record != 0 && check} >
             <h1>{name}</h1>
             <div className="sequences">
                 <p className="actual">Sequência atual: <b>{sequence} {sequence > 0 ? "dia" : "dias" }</b> </p>
