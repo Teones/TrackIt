@@ -4,6 +4,7 @@ import SignInPage from './pages/SignInPage';
 import SignUpPage from './pages/SignUpPage';
 import HabitsPage from './pages/HabitsPage';
 import HistoryPage from './pages/HistoryPage';
+import TodayPage from './pages/TodayPage';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
         <Route path='/signUp' element={<SignUpPage />} />
         <Route path='/habits' element={<HabitsPage />} />
         <Route path='/history' element={<HistoryPage />} />
+        <Route path='/today' element={<TodayPage />} />
       </Routes>
     </Router>
     </>
