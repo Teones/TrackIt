@@ -1,6 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import dayjs from "dayjs";
+import 'dayjs/locale/pt-br';
 import axios from "axios";
 import { useContext, useEffect, useState } from "react";
 
@@ -14,7 +15,9 @@ export default function TodayPage() {
     useEffect(() => {
         user.token == undefined ? navigate("/") : ""
     }, [])
-    const date = dayjs().locale('pt-br').format('dddd, DD/MM').split('-feira').join('')
+
+    dayjs.locale('pt-br');
+    const date = dayjs().format('dddd, DD/MM').split('-feira').join('')
     const day = date[0].toUpperCase() + date.substring(1)
 
     const [habits, setHabits] = useState([])
@@ -51,7 +54,9 @@ export default function TodayPage() {
             <HabitList>
                 {(habits.length > 0) ? 
                 habits.map(habit => <HabitCard user={user} id={habit.id} sequence={habit.currentSequence} done={habit.done} record={habit.highestSequence} name={habit.name} key={habit.id} />)
-                : ""}
+                : 
+                <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
+                }
             </HabitList>
 
             <Footer>
@@ -69,6 +74,8 @@ export default function TodayPage() {
 
 function HabitCard({sequence, done, record, name, id, user}) {
     const [check, setCheck] = useState(done);
+    const [updateSequence, setUpdateSequence] = useState(sequence)
+    const [updateRecord, setUpdateRecord] = useState(record)
 
     function checkHabit() {
         const url = `https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/${id}/${check ? "uncheck": "check"}`
@@ -80,7 +87,8 @@ function HabitCard({sequence, done, record, name, id, user}) {
         const promise = axios.post(url, {},config)
         promise.then( response => {
             const {data} = response
-            console.log(data)
+            check ? setUpdateSequence(updateSequence - 1) : setUpdateSequence(updateSequence + 1)
+            check ? setUpdateRecord(updateRecord - 1) : setUpdateRecord(updateRecord + 1)
             setCheck(!check)
         })
         promise.catch(err => {
@@ -89,11 +97,11 @@ function HabitCard({sequence, done, record, name, id, user}) {
     }
 
     return (
-        <Habit check={check} record={record >= sequence && record != 0 && check} >
+        <Habit check={check} record={updateRecord >= updateSequence && updateRecord != 0 && check} >
             <h1>{name}</h1>
             <div className="sequences">
-                <p className="actual">Sequência atual: <b>{sequence} {sequence > 0 ? "dia" : "dias" }</b> </p>
-                <p className="record">Seu recorde: <b>{record} {record > 0 ? "dia" : "dias" }</b></p>
+                <p className="actual">Sequência atual: <b>{updateSequence} {updateSequence > 0 ? "dia" : "dias" }</b> </p>
+                <p className="record">Seu recorde: <b>{updateRecord} {updateRecord > 0 ? "dia" : "dias" }</b></p>
             </div>
             <ion-icon onClick={() => checkHabit()} name="checkbox" ></ion-icon>
         </Habit>
@@ -209,6 +217,12 @@ const HabitList = styled.div `
     display: flex;
     flex-direction: column;
     padding: 0 18px;
+    p {
+        font-family: "Lexend Deca";
+        font-size: 18px;
+        font-weight: 400;
+        color: #666666;
+    }
 `
 
 const Habit = styled.div `
