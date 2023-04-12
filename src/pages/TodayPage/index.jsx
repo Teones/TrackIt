@@ -1,9 +1,12 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useState } from "react";
 import styled from "styled-components";
+import axios from "axios";
 import dayjs from "dayjs";
 import 'dayjs/locale/pt-br';
-import axios from "axios";
-import { useContext, useEffect, useState } from "react";
+
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 import UserContext from '../../context/UserContext';
 
@@ -11,6 +14,7 @@ export default function TodayPage() {
     const navigate = useNavigate()
     const { userContext } = useContext(UserContext);
     const user = userContext;
+    console.log(user)
 
     useEffect(() => {
         user.token == undefined ? navigate("/") : ""
@@ -21,6 +25,7 @@ export default function TodayPage() {
     const day = date[0].toUpperCase() + date.substring(1)
 
     const [habits, setHabits] = useState([])
+    const [progress, setProgress] = useState(0)
 
     useEffect(() => {
         const url = "https://mock-api.bootcamp.respondeai.com.br/api/v2/trackit/habits/today"
@@ -33,13 +38,16 @@ export default function TodayPage() {
         promise.then( response => {
             const {data} = response
             setHabits(data)
-            console.log(data)
+            const habitsDone = (data.filter(habits => habits.done).length)
+            data.length != 0 ? setProgress((habitsDone / data.length)) : setProgress(0)
+
+            console.log(progress)
         })
         promise.catch(err => {
             console.log(`Erro ${err.response.status}, ${err.response.data.message} `)
         })
     }, [])
-
+    
     return (
         <PageToday>
             <Header>
@@ -53,7 +61,7 @@ export default function TodayPage() {
 
             <HabitList>
                 {(habits.length > 0) ? 
-                habits.map(habit => <HabitCard user={user} id={habit.id} sequence={habit.currentSequence} done={habit.done} record={habit.highestSequence} name={habit.name} key={habit.id} />)
+                habits.map(habit => <HabitCard progress={progress} setProgress={setProgress} habits={habits} user={user} id={habit.id} sequence={habit.currentSequence} done={habit.done} record={habit.highestSequence} name={habit.name} key={habit.id} />)
                 : 
                 <p>Você não tem nenhum hábito cadastrado ainda. Adicione um hábito para começar a trackear!</p>
                 }
@@ -63,6 +71,9 @@ export default function TodayPage() {
                 <Link to="/habits">Hábitos</Link>
                 <Link to="/Today">
                     <Today>
+                        <div style={{ width: 80, height: 80, position: "absolute",  }}>
+                            <CircularProgressbar value={progress} maxValue={1} text='' strokeWidth={10} styles={{path:{stroke: '#FFFFFF'}, trail: {stroke: '#52B6FF'}}} />
+                        </div>
                         <h1>Hoje</h1>
                     </Today> 
                 </Link>
@@ -72,7 +83,9 @@ export default function TodayPage() {
     )
 }
 
-function HabitCard({sequence, done, record, name, id, user}) {
+function HabitCard({ setProgress, progress, habits, sequence, done, record, name, id, user}) {
+    const { setUserContext } = useContext(UserContext);
+
     const [check, setCheck] = useState(done);
     const [updateSequence, setUpdateSequence] = useState(sequence)
     const [updateRecord, setUpdateRecord] = useState(record)
@@ -89,6 +102,17 @@ function HabitCard({sequence, done, record, name, id, user}) {
             const {data} = response
             check ? setUpdateSequence(updateSequence - 1) : setUpdateSequence(updateSequence + 1)
             check ? setUpdateRecord(updateRecord - 1) : setUpdateRecord(updateRecord + 1)
+
+            const totalHabits = habits.length;
+            let progressUpdate = check ? (progress - (1 / totalHabits)) : (progress + (1 / totalHabits))
+            check ? setProgress(progressUpdate) : setProgress(progressUpdate) 
+            
+            setUserContext({
+                ... user,
+                progress: progressUpdate
+            })
+            console.log(progressUpdate)
+
             setCheck(!check)
         })
         promise.catch(err => {

@@ -1,7 +1,10 @@
 import { Link, useNavigate } from "react-router-dom";
-import styled from "styled-components";
 import { useEffect, useState, useContext } from "react";
+import styled from "styled-components";
 import axios from "axios"
+
+import { CircularProgressbar } from 'react-circular-progressbar';
+import 'react-circular-progressbar/dist/styles.css';
 
 import UserContext from '../../context/UserContext';
 
@@ -116,6 +119,9 @@ export default function HabitsPage() {
                 <Link to="/habits">Hábitos</Link>
                 <Link to="/Today">
                     <Today>
+                        <div style={{ width: 80, height: 80, position: "absolute",  }}>
+                            <CircularProgressbar value={0.7} maxValue={1} text='' strokeWidth={10} styles={{path:{stroke: '#FFFFFF'}, trail: {stroke: '#52B6FF'}}} />
+                        </div>
                         <h1>Hoje</h1>
                     </Today> 
                 </Link>
